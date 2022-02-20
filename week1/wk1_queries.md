@@ -5,7 +5,7 @@
     **Number of documents in the Product index**: 1,275,077
     **Number of documents in the Query index**: 1,865,269
 
-    ![wk1](indices_cnt.png)
+![wk1](indices_cnt.png)
 
     ```
     GET /_search
@@ -63,7 +63,9 @@
 2. **What field types and analyzers did you use for the following fields and why?**
 
     a. **Name**: text keyword type field and english analyzer
+    
     b. **shortDescription and longDescription**: text keyword type field and english analyzer
+    
     c. **regularPrice**: float
 
 3. **Compare your field mappings with the instructors’. Where did you align and where did you differ? What are the pros and cons of the different approaches?**    
@@ -72,7 +74,7 @@ On quick comparison, there were some other extra inputs were used like ignore ma
 
 **Were you able to get the “ipad 2” to show up in the top of your results? How many iterations did it take for you to get there, if at all?**
 
-    - I was able to get ipad2 on the top using query below, Need to spend time to make query work on the flask web app to get it running
+I was able to get ipad2 on the top using query below, Need to spend time to make query work on the flask web app to get it running
 
 ![wk1](ipad2.png)
 
