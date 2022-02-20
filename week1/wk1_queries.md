@@ -38,7 +38,8 @@
     }
     ```
 
-    **Missing an image field**: 4434
+    **Missing an image field**
+
     **Number of documents missing an “image” field**: 4,434
 
     ```
