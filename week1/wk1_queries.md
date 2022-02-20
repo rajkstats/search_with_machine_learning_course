@@ -5,6 +5,8 @@
     **Number of documents in the Product index**: 1,275,077
     **Number of documents in the Query index**: 1,865,269
 
+    ![wk1](indices_cnt.png)
+
     ```
     GET /_search
     {
@@ -18,6 +20,7 @@
     ```
 
     There are 16,772 items in the “Computers” department when using a “match all” query (“*”) and faceting on “department.keyword”.
+    ![wk1](dept_cmp.png)
 
     ```
     GET bbuy_products/_search
@@ -41,7 +44,7 @@
     **Missing an image field**
 
     **Number of documents missing an “image” field**: 4,434
-
+    ![wk1](missing_img.png)
     ```
     GET bbuy_products/_count
     {
@@ -70,6 +73,8 @@ On quick comparison, there were some other extra inputs were used like ignore ma
 **Were you able to get the “ipad 2” to show up in the top of your results? How many iterations did it take for you to get there, if at all?**
 
     - I was able to get ipad2 on the top using query below, Need to spend time to make query work on the flask web app to get it running
+
+![wk1](ipad2.png)
 
 ```
 GET bbuy_products/_search
