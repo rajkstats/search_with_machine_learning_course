@@ -163,6 +163,7 @@ body_query_feature_name = "body_query"
 title_query_feature_name = "title_query"
 price_func_feature_name = "price_func"
 print("\tUpload our features to the LTR storage")
+
 ltr_feature_set = {"featureset": {
     "features": [
         {  # Instead of using our multifield query_string match, break it out into parts
