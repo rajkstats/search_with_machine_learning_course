@@ -57,18 +57,19 @@
     }
     ```
 
-- What field types and analyzers did you use for the following fields and why?
-    - **Name**: text keyword type field and english analyzer
-    - **shortDescription and longDescription**: text keyword type field and english analyzer
-    - **regularPrice**: float
+2. **What field types and analyzers did you use for the following fields and why?**
 
-- Compare your field mappings with the instructors’. Where did you align and where did you differ? What are the pros and cons of the different approaches?    
+    a. **Name**: text keyword type field and english analyzer
+    b. **shortDescription and longDescription**: text keyword type field and english analyzer
+    c. **regularPrice**: float
+
+3. **Compare your field mappings with the instructors’. Where did you align and where did you differ? What are the pros and cons of the different approaches?**    
 On quick comparison, there were some other extra inputs were used like ignore malformed which I didn't use which would become handy in cases when we have malformed data coming in and 
 
 
-- Were you able to get the “ipad 2” to show up in the top of your results? How many iterations did it take for you to get there, if at all?
+**Were you able to get the “ipad 2” to show up in the top of your results? How many iterations did it take for you to get there, if at all?**
 
-    - I was able to get ipad2 on the top, Need to spend time to make query work on the flask web app to get it running
+    - I was able to get ipad2 on the top using query below, Need to spend time to make query work on the flask web app to get it running
 
 ```
 GET bbuy_products/_search
