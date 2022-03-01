@@ -23,7 +23,7 @@ def get_opensearch():
             http_compress = True, # enables gzip compression for request bodies
             http_auth = auth,
             use_ssl = True,
-            verify_certs = False,
+            verify_certs = False, #set to true if you have any certificates
             ssl_assert_hostname = False,
             ssl_show_warn = False,
         )
