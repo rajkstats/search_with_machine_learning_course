@@ -3,6 +3,8 @@ import argparse
 import xml.etree.ElementTree as ET
 import pandas as pd
 import numpy as np
+import csv
+import string
 
 # Useful if you want to perform stemming.
 import nltk
@@ -11,7 +13,7 @@ stemmer = nltk.stem.PorterStemmer()
 categories_file_name = r'/workspace/datasets/product_data/categories/categories_0001_abcat0010000_to_pcmcat99300050000.xml'
 
 queries_file_name = r'/workspace/datasets/train.csv'
-output_file_name = r'/workspace/datasets/fasttext/labeled_query_data.txt'
+output_file_name = r'/workspace/datasets/labeled_query_data.txt'
 
 parser = argparse.ArgumentParser(description='Process arguments.')
 general = parser.add_argument_group("general")
@@ -48,8 +50,26 @@ df = pd.read_csv(queries_file_name)[['category', 'query']]
 df = df[df['category'].isin(categories)]
 
 # IMPLEMENT ME: Convert queries to lowercase, and optionally implement other normalization, like stemming.
+def normalise_query(query):
+    query = query.strip().lower()
+    tokens = query.split()
+    stemmed_tokens = [stemmer.stem(token) for token in tokens]
+    query = ' '.join(stemmed_tokens)
+    return query
+
+df['query'] = df['query'].apply(normalise_query)
+print("unique cateogies:", len(df['category'].unique()))
 
 # IMPLEMENT ME: Roll up categories to ancestors to satisfy the minimum number of queries per category.
+
+df_with_counts = df.groupby('category').size().reset_index(name='count')
+df_merged = df.merge(df_with_counts, how='left', on='category').merge(parents_df, how='left', on='category')
+while len(df_merged[df_merged['count'] < min_queries]) > 0:
+    df_merged.loc[df_merged['count'] < min_queries, 'category'] = df_merged['parent']
+    df = df_merged[['category', 'query']]
+    df = df[df['category'].isin(categories)]
+    df_with_counts = df.groupby('category').size().reset_index(name='count')
+    df_merged = df.merge(df_with_counts, how='left', on='category').merge(parents_df, how='left', on='category')
 
 # Create labels in fastText format.
 df['label'] = '__label__' + df['category']
