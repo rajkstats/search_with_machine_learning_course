@@ -7,6 +7,9 @@ from flask import (
 
 from week4.opensearch import get_opensearch
 
+import nltk
+stemmer = nltk.stem.PorterStemmer()
+
 import week4.utilities.query_utils as qu
 import week4.utilities.ltr_utils as lu
 
@@ -55,6 +58,30 @@ def process_filters(filters_input):
     print("Filters: {}".format(filters))
 
     return filters, display_filters, applied_filters
+
+def normalise_query(query):
+    query = query.strip().lower()
+    tokens = query.split()
+    stemmed_tokens = [stemmer.stem(token) for token in tokens]
+    query = ' '.join(stemmed_tokens)
+    return query
+
+def get_query_category(user_query, query_class_model):
+    # print("IMPLEMENT ME: get_query_category")
+    user_query = normalise_query(user_query)
+    model_output = query_class_model.predict(user_query, k=5)
+    predicted_cats = model_output[0]
+    scores = model_output[1]
+    output_cats = []
+    score_sum = 0.0
+    for i in range(len(predicted_cats)):
+        cat = predicted_cats[i].replace("__label__", "")
+        output_cats.append(cat)
+        score_sum += scores[i]
+        if score_sum >= 0.6:
+            break
+    print(user_query, len(output_cats), score_sum)
+    return output_cats
 
 
 @bp.route('/query', methods=['GET', 'POST'])
@@ -117,7 +144,7 @@ def query():
             explain = True
         if filters_input:
             (filters, display_filters, applied_filters) = process_filters(filters_input)
-        model = request.args.get("model", "simiple")
+        model = request.args.get("model", "simple")
         if model == "simple_LTR":
             query_obj = qu.create_simple_baseline(user_query, click_prior, filters, sort, sortDir, size=500)
             query_obj = lu.create_rescore_ltr_query(user_query, query_obj, click_prior, ltr_model_name, ltr_store_name, rescore_size=500)
@@ -131,6 +158,16 @@ def query():
     else:
         query_obj = qu.create_query("*", "", [], sort, sortDir, size=100)
 
+    query_class_model = current_app.config["query_model"]
+    query_category = get_query_category(user_query, query_class_model)
+    if query_category is not None and len(query_category) > 0:
+        terms_filter = {
+            "terms": {
+                "categoryPathIds.keyword": query_category,
+                "boost": 100.0
+            }
+        }
+        query_obj["query"]["bool"]["filter"].append(terms_filter)
     #print("query obj: {}".format(query_obj))
     response = opensearch.search(body=query_obj, index=current_app.config["index_name"], explain=explain)
     # Postprocess results here if you so desire
@@ -139,7 +176,7 @@ def query():
     if error is None:
         return render_template("search_results.jinja2", query=user_query, search_response=response,
                                display_filters=display_filters, applied_filters=applied_filters,
-                               sort=sort, sortDir=sortDir, model=model, explain=explain)
+                               sort=sort, sortDir=sortDir, model=model, explain=explain, query_category=query_category)
     else:
         redirect(url_for("index"))
 
@@ -163,5 +200,3 @@ def get_click_prior(user_query):
             # nothing to do here, we just haven't seen this query before in our training set
     print("prior: %s" % click_prior)
     return click_prior
-
-
